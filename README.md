@@ -4,7 +4,7 @@ And Fly Caching
 ### GIT Command
 ```git_command
 git init
-git remote add origin https://github.com/rzrasel/And-Log-Writer.git
+git remote add origin https://github.com/rzrasel/And-Fly-Caching.git
 git remote -v
 git fetch && git checkout master
 git add .
