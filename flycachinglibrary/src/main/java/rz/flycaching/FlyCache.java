@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class FlyCache {
@@ -59,13 +60,53 @@ public class FlyCache {
     public static boolean onDeleteCache(Context argContext, String argCacheKey) {
         String caseKey = "";
         caseKey = getBase64MD5(argCacheKey);
-        String cacheDirectory = argContext.getCacheDir().getParent();
-        File file = new File(cacheDirectory, caseKey);
-        System.out.println("DEBUG_LOG_PRINT: setCache cache_key " + file);
+        String filePath = onRetrieveDirectoryPath(argContext, caseKey);
+        /*String cacheDirectory = argContext.getCacheDir().getParent();
+        File file = new File(cacheDirectory, caseKey);*/
+        File file = new File(filePath);
+        System.out.println("DEBUG_LOG_PRINT: onDeleteCache dataCacheKey " + file);
         if (file.exists()) {
             return file.delete();
+        } else {
         }
         return false;
+    }
+
+    public static boolean getCacheTime(Context argContext, String argCacheKey) {
+        String caseKey = "";
+        caseKey = getBase64MD5(argCacheKey);
+        String filePath = onRetrieveDirectoryPath(argContext, caseKey);
+        /*String cacheDirectory = argContext.getCacheDir().getParent() + "";
+        File file = new File(cacheDirectory, caseKey);*/
+        File file = new File(filePath);
+        System.out.println("DEBUG_LOG_PRINT: getCacheTime dataCacheKey " + file);
+        if (file.exists()) {
+            //return file.delete();
+            long timestamp = file.lastModified();
+            System.out.println("DEBUG_LOG_PRINT: getCacheTime timestamp " + timestamp);
+            System.out.println("DEBUG_LOG_PRINT: getCacheTime timestamp " + System.currentTimeMillis());
+            System.out.println("dataCacheKey last modified date = " + new Date(timestamp));
+        } else {
+            System.out.println("DEBUG_LOG_PRINT: getCacheTime file not found");
+        }
+        return false;
+    }
+
+    private static String onRetrieveDirectoryPath(Context argContext, String argCacheKey) {
+        String cacheDirectory = argContext.getCacheDir().getParent() + "";
+        File file = new File(cacheDirectory);
+        File[] files = file.listFiles();
+        for (File item : files) {
+            if (item.isDirectory()) {
+                file = new File(item, argCacheKey);
+                //System.out.println("DEBUG_LOG_PRINT: onRetriveDirectoryPath " + file + "");
+                if (file.exists()) {
+                    //System.out.println("DEBUG_LOG_PRINT: onRetriveDirectoryPath found " + file);
+                    return file + "";
+                }
+            }
+        }
+        return "";
     }
 
     private static String getBase64MD5(String argString) {
@@ -76,7 +117,7 @@ public class FlyCache {
             argString = argString.replaceAll("\\\\", "");*/
             byte[] byteArray = argString.getBytes("UTF-8");
             String base64String = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            base64String = base64String.replaceAll("\\s+", "");
+            //base64String = base64String.replaceAll("\\s+", "");
             //base64String = base64String.replaceAll("(\\\\+|/+)", Matcher.quoteReplacement(System.getProperty("file.separator")));
             //base64String = base64String.replaceAll("(?<!^)(\\\\|/)", "");
             /*base64String = base64String.replaceAll("/", "");
@@ -238,4 +279,5 @@ public class Box<T> {
       System.out.printf("String Value :%s\n", stringBox.get());
    }
 }
+http://www.technotalkative.com/android-load-images-from-web-and-caching/
 */
