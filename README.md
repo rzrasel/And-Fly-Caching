@@ -24,13 +24,13 @@ Download the latest JAR or grab via Maven:
 <dependency>
   <groupId>com.adept.coffeelab</groupId>
   <artifactId>fly-caching</artifactId>
-  <version>100.00.02</version>
+  <version>100.00.01</version>
   <type>pom</type>
 </dependency>
 ```
 or Gradle:
 ```groovy
-implementation 'com.adept.coffeelab:fly-caching:100.00.02'
+implementation 'com.adept.coffeelab:fly-caching:100.00.01'
 ```
 
 Usage
@@ -41,14 +41,17 @@ In your Activity
 ```java
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-import rz.logwriter.LogWriter;
+import rz.flycaching.FlyCache;
 
 public class ActSplash extends AppCompatActivity {
     private Activity activity;
     private Context context;
+    private String dataCacheKey = "dataCacheKey";
+    private String dataCacheKey2 = "dataCacheKey_cacheKey01";
+    private String dataCacheKey3 = "dataCacheKey_cacheKey02";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +59,12 @@ public class ActSplash extends AppCompatActivity {
         setContentView(R.layout.act_splash);
         activity = this;
         context = this;
-        LogWriter.Log("Test Log");
+        FlyCache.setCache(context, dataCacheKey, "Test cache data");
+        FlyCache.setCache(context, dataCacheKey2, "Test cache data 02");
+        FlyCache.setCache(context, dataCacheKey3, "Test cache data 03");
+        System.out.println("DEBUG_LOG_PRINT: " + FlyCache.getCache(context, dataCacheKey));
+        FlyCache.getCacheTime(context, dataCacheKey);
+        FlyCache.onClearAll(context);
     }
 }
 ```
