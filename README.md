@@ -33,6 +33,18 @@ or Gradle:
 implementation 'com.adept.coffeelab:fly-caching:100.00.01'
 ```
 
+If any problem add app level gradel file
+```if_problem
+allprojects {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+        maven { url 'https://dl.bintray.com/rzrasel/CommonLibraries/' }
+    }
+}
+```
+
 Usage
 -----
 
