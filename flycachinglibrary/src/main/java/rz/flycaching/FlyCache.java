@@ -16,7 +16,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FlyCache {
     public static void setCache(Context argContext, String argCacheKey, Object argObject) {
@@ -30,6 +32,7 @@ public class FlyCache {
             objectOutputStream.writeObject(argObject);
             objectOutputStream.close();
             fileOutputStream.close();
+            updateCoreCacheFileList(argContext, caseKey);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -70,6 +73,74 @@ public class FlyCache {
         } else {
         }
         return false;
+    }
+
+    public static void onClearAll(Context argContext) {
+        Set<String> coreCacheFileSet;
+        String coreCacheFileName = getCoreCacheFileName(argContext);
+        Object object = getCache(argContext, coreCacheFileName);
+        if (object != null) {
+            coreCacheFileSet = (Set<String>) object;
+        } else {
+            coreCacheFileSet = new HashSet<>();
+        }
+        System.out.println("DEBUG_LOG_PRINT: clearAll -> size " + coreCacheFileSet.size());
+        System.out.println("DEBUG_LOG_PRINT: clearAll -> data " + coreCacheFileSet.toString());
+        for (String item : coreCacheFileSet) {
+            String filePath = onRetrieveDirectoryPath(argContext, item);
+            //System.out.println("DEBUG_LOG_PRINT: clearAll -> file_path " + filePath);
+            File file = new File(filePath);
+            if (file.exists()) {
+                System.out.println("DEBUG_LOG_PRINT: onClearAll dataCacheKey " + file);
+                file.delete();
+            }
+        }
+    }
+
+    private static void updateCoreCacheFileList(Context argContext, String argCacheFile) {
+        Set<String> coreCacheFileSet;
+        //List<String> listCache;
+        String coreCacheFileName = getCoreCacheFileName(argContext);
+        String caseKey = "";
+        caseKey = getBase64MD5(coreCacheFileName);
+        Object object = getCache(argContext, coreCacheFileName);
+        if (object != null) {
+            coreCacheFileSet = (Set<String>) object;
+        } else {
+            coreCacheFileSet = new HashSet<>();
+        }
+        coreCacheFileSet.add(argCacheFile);
+        /*System.out.println("DEBUG_LOG_PRINT: updateCacheFileList -> dataCacheKey " + argCacheFile);
+        System.out.println("DEBUG_LOG_PRINT: updateCacheFileList -> dataCacheKey " + caseKey);
+        System.out.println("DEBUG_LOG_PRINT: updateCacheFileList -> size " + coreCacheFileSet.size());
+        System.out.println("DEBUG_LOG_PRINT: updateCacheFileList -> data " + coreCacheFileSet.toString());*/
+        try {
+            FileOutputStream fileOutputStream = argContext.openFileOutput(caseKey, Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(coreCacheFileSet);
+            objectOutputStream.close();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String getCoreCacheFileName(Context argContext) {
+        String coreCacheListFileName = "rzrasel"
+                + "rz_rasel"
+                + "core_cache_file_name"
+                + argContext.getPackageName()
+                + "fly_cache"
+                + argContext.getPackageName()
+                + "rz_rasel"
+                + "cache_file_name"
+                + "core_cache_file_name"
+                + "fly_cache"
+                + "rz_rasel"
+                + "rzrasel";
+        return coreCacheListFileName;
     }
 
     public static boolean getCacheTime(Context argContext, String argCacheKey) {
